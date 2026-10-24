@@ -1,0 +1,6 @@
+"0","# Call custom function with sample arguments for a and b"
+"0","mytrain(a = 0, b = 5)"
+"1","[1]"
+"1"," 0.5"
+"1","
+"

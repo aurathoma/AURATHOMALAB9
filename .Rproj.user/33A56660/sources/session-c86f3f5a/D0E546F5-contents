@@ -1,0 +1,67 @@
+---
+title: "AURATHOMLAB5"
+author: "Aura Thoma"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Task 1 {-}
+
+```{r task 1}
+#load package Aurathomalab5
+library(AURATHOMALAB5)
+# reference dataset from package 
+data("ddt", package = "AURATHOMALAB5")
+l <- boxhist(ddt)
+
+library(dplyr)
+# display head of filtered data
+l$df_num %>% head(1)
+l$df_char %>% head(1)
+```
+
+# Task 2 {-}
+
+```{r}
+#load package patchwork
+library(patchwork)
+# call function 
+print.boxhist(x = l, which = 2)
+```
+
+# Task 3 {-}
+
+
+```{r}
+# call function 
+plot.boxhist(x = l, which = 2)
+```
+# Task 4 {-}
+
+
+```{r}
+# call function 
+summary.boxhist(x = l, which = 2)
+```
+
+# Task 5 {-}
+
+Commit
+
+
+![5 commit](5 commit.png)
+
+
+Check
+
+Sys.setenv("_R_CHECK_SYSTEM_CLOCK_" = 0)
+devtools::check()
+
+![check](check.png)

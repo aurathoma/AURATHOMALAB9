@@ -1,0 +1,215 @@
+---
+title: "AURATHOMLAB9"
+author: "Aura Thoma"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+    number_sections: yes
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Task 1 {-}
+
+```{r}
+# start of function
+ptrain <- function(y) {
+  # F(y) calculation
+  p <- (75 * y - y^3 + 250) / 500
+  
+  # y value boundaries
+  p[y < -5] <- 0
+  p[y > 5] <- 1
+  
+  # return p
+  return(p)
+}
+
+# call function and set y = 0
+ptrain(0)
+
+```
+
+# Task 2 {-}
+
+```{r}
+# start of function 
+mytrain <- function(a, b) {
+  # solve if y >= -5 and y <= 5
+  f <- function(y) {
+    ifelse(y >= -5 & y <= 5, (3 / 500) * (25 - y^2), 0)
+  }
+  
+  #  Define the CDF function F(y) to compute between values of a and b
+  F_val <- function(y) {
+    p <- (75 * y - y^3 + 250) / 500
+    p[y < -5] <- 0
+    p[y > 5] <- 1
+    return(p)
+  }
+  
+  # Calculate area P(a <= Y <= b) rounded to 4 decimal places
+  area <- round(F_val(b) - F_val(a), 4)
+  
+  # Curve points for plot
+  x_curve <- seq(-10, 10, length.out = 1000)
+  y_curve <- f(x_curve)
+  
+  # Plot the density curve
+  plot(
+    x_curve, y_curve,
+    type = "l",
+    col = "blue",
+    lwd = 2,
+    xaxt = "n",
+    xlab = "Y",
+    ylab = "Density",
+    main = "Time a train is late"
+  )
+  
+  # Custom x-axis ticks 
+  axis(1, at = c(-10, -5, a, 0, b, 5, 10))
+  
+  # polygon between a and b
+  x_shade <- seq(a, b, length.out = 500)
+  y_shade <- f(x_shade)
+  polygon(
+    c(a, x_shade, b),
+    c(0, y_shade, 0),
+    col = "red",
+    border = "black"
+  )
+  
+  # create line curves 
+  lines(x_curve, y_curve, col = "blue", lwd = 2)
+  
+  # add text displaying area value 
+  text(
+    x = b + 1.5,
+    y = 0.10,
+    labels = paste0("Area = ", round(area, 2))
+  )
+  
+  # Return the result
+  return(area)
+}
+
+```
+
+# Task 3 {-}
+
+```{r}
+# Call custom function with sample arguments for a and b
+mytrain(a = 0, b = 5)
+```
+
+
+# Task 6 {-}
+
+```{r}
+# # Task 6 {-}
+
+rtrain <- function(n, w = 0.4) {
+  
+  # Define the objective function using the exact polynomial expression minus w
+  f <- function(x) {
+    (75 * x - x^3 + 250) / 500 - w
+  }
+  
+  #  First plot: Objective function curve from -5 to 1
+  curve(f, c(-5, 1), xlab = "Y", ylab = "Objective function f", col = "black")
+  abline(h = 0, col = "blue")
+  
+  # Find and print the root for the initial w value
+  root_result <- uniroot(f, interval = c(-5, 5))
+  print(root_result)
+  
+  # Generate the random sample using replicate and uniroot
+  sample_v <- replicate(n, {
+    w_val <- runif(1) # Random uniform value between 0 and 1
+    f_sample <- function(x) (75 * x - x^3 + 250) / 500 - w_val
+    uniroot(f_sample, interval = c(-5, 5))$root
+  })
+  
+  # Second plot: Histogram of the simulation with the PDF overlay
+  hist(sample_v, probability = TRUE, breaks = 40, col = "blue", 
+       main = "Simulation of the time a train is late", xlab = "Y", xlim = c(-5, 5))
+  
+  # Overlay the PDF curve (derivative of the CDF)
+  curve((75 - 3 * x^2) / 500, from = -5, to = 5, col = "red", lwd = 2, add = TRUE)
+  
+  # Return vector of samples
+  return(sample_v)
+}
+
+# Run the function matching the lab's template call
+v <- rtrain(n = 10000, w = 0.4)
+
+# View the first few values
+head(v, 10)
+```
+
+# dtrain {-}
+
+
+```{r}
+dtrain <- function(y) {
+  # Derivative of the CDF 
+  d <- (75 - 3 * y^2) / 500
+  
+  # Handle boundary conditions for a PDF. 
+  d[y < -5 | y > 5] <- 0
+  
+  return(d)
+}
+
+# Test dtrain function
+dtrain(0)
+```
+
+# qtrain {-}
+
+```{r}
+qtrain <- function(p) {
+  # Validate that probabilities are between 0 and 1
+  if (any(p < 0 | p > 1)) {
+    stop("Probabilities must be between 0 and 1.")
+  }
+  
+  # Use sapply to vectorize uniroot 
+  sapply(p, function(prob) {
+    if (prob == 0) return(-5)
+    if (prob == 1) return(5)
+    
+    # Define the objective function
+    f <- function(y) {
+      ptrain(y) - prob
+    }
+    
+    # Find the root within the interval 
+    uniroot(f, interval = c(-5, 5))$root
+  })
+}
+
+# run the qtrain function
+qtrain(0.5)
+```
+
+Commit
+
+![commit9](commit9.png)
+
+Check
+ERROR: Unknown command "TMPDIR=C:/Users/aurat/AppData/Local/Temp/RtmpKErSnk/file19dc1f4d1e12". Did you mean command "render"?
+   Warning message:
+   In system2("quarto", "-V", stdout = TRUE, env = paste0("TMPDIR=",  :
+     running command '"quarto" TMPDIR=C:/Users/aurat/AppData/Local/Temp/RtmpKErSnk/file19dc1f4d1e12 -V' had status 1
+── R CMD check results ─────────────────────────────────────────── AURATHOMALAB9 0.1.0 ────
+Duration: 30.1s
+
+0 errors ✔ | 0 warnings ✔ | 0 notes ✔
+
+
